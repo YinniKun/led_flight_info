@@ -2,7 +2,7 @@
 
 An interactive, high-contrast flight status tracker and aviation weather display designed for **Raspberry Pi 4** using the **WatangTech RGB Matrix Adapter Board** and a **64x32 (2048 RGB) Full Color LED Matrix Panel (2.5mm pitch, P2.5)**.
 
-Includes a mobile setup portal, on-screen QR code onboarding, live ADS-B flight tracking, preference alerts with visual flashing, airport METAR weather decoding, and aviation easter eggs.
+Includes a mobile setup portal, on-screen onboarding, live ADS-B flight tracking, preference alerts with visual flashing, airport METAR weather decoding, and aviation easter eggs.
 
 ---
 
@@ -14,7 +14,6 @@ Includes a mobile setup portal, on-screen QR code onboarding, live ADS-B flight 
     - `SSID: FlightNet`
     - `PASS: fly12345`
     - `IP: 10.42.0.1:5000`
-  - Eliminates unreadable QR codes on low-resolution 2.5mm LED panels.
 - **📱 Phone Captive Portal & Home Wi-Fi Setup**:
   - Connect your smartphone to `FlightNet`; the onboarding portal opens automatically (with iOS/Android captive portal probe support).
   - Scan nearby home/office Wi-Fi networks in Step 1, input your Wi-Fi password, and the Pi connects to the internet and disables the setup hotspot automatically!
