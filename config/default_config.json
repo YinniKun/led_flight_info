@@ -1,0 +1,72 @@
+{
+  "setup_completed": false,
+  "location": {
+    "name": "San Francisco Airport Area",
+    "lat": 37.6213,
+    "lon": -122.3790,
+    "altitude_m": 4.0,
+    "radius_km": 25.0,
+    "nearest_airport_icao": "KSFO"
+  },
+  "preferences": {
+    "preferred_flight_numbers": [
+      "UA1422",
+      "AA280",
+      "DL481"
+    ],
+    "preferred_flight_date": "",
+    "preferred_airlines": [
+      "UAL",
+      "DAL",
+      "AAL",
+      "BAW",
+      "SWA"
+    ],
+    "preferred_aircraft_models": [
+      "A380",
+      "B747",
+      "B787",
+      "A350",
+      "CONC"
+    ],
+    "flash_on_preference": true,
+    "flash_speed_hz": 2.5
+  },
+  "display": {
+    "brightness": 65,
+    "units": "aviation",
+    "rotation": 0,
+    "flight_overhead_timeout_sec": 30,
+    "screen_cycle_sec": 10,
+    "fun_animation_interval_sec": 300,
+    "metar_scroll_speed_fps": 16
+  },
+  "hardware": {
+    "rows": 32,
+    "cols": 64,
+    "chain_length": 1,
+    "parallel": 1,
+    "gpio_mapping": "adafruit-hat",
+    "gpio_slowdown": 4,
+    "pwm_bits": 11,
+    "pwm_lsb_nanoseconds": 130,
+    "show_refresh_rate": false
+  },
+  "api": {
+    "flight_data_provider": "adsb_lol",
+    "flight_poll_interval_sec": 10,
+    "weather_poll_interval_sec": 300,
+    "use_mock_flights": false,
+    "use_mock_fallback": false,
+    "opensky_username": "",
+    "opensky_password": ""
+  },
+  "network": {
+    "web_port": 5000,
+    "hotspot_ssid": "FlightNet",
+    "hotspot_password": "fly12345",
+    "hotspot_ip": "10.42.0.1",
+    "ap_ssid": "FlightNet",
+    "ap_password": "fly12345"
+  }
+}

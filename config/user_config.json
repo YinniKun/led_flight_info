@@ -1,0 +1,67 @@
+{
+  "setup_completed": true,
+  "location": {
+    "name": "Test Location",
+    "lat": 51.5,
+    "lon": -0.1,
+    "altitude_m": 4.0,
+    "radius_km": 25,
+    "nearest_airport_icao": "CYYZ"
+  },
+  "preferences": {
+    "preferred_flight_numbers": [
+      "AC1@2026-11-05"
+    ],
+    "preferred_flight_date": "2026-11-04",
+    "preferred_airlines": [
+      "ACA"
+    ],
+    "preferred_aircraft_models": [
+      "A380",
+      "B747",
+      "B787",
+      "A350",
+      "CONC"
+    ],
+    "flash_on_preference": true,
+    "flash_speed_hz": 2.5
+  },
+  "display": {
+    "brightness": 80,
+    "units": "aviation",
+    "rotation": 0,
+    "flight_overhead_timeout_sec": 30,
+    "screen_cycle_sec": 10,
+    "fun_animation_interval_sec": 300,
+    "metar_scroll_speed_fps": 12
+  },
+  "hardware": {
+    "rows": 32,
+    "cols": 64,
+    "chain_length": 1,
+    "parallel": 1,
+    "gpio_mapping": "regular",
+    "gpio_slowdown": 4,
+    "pwm_bits": 11,
+    "pwm_lsb_nanoseconds": 130,
+    "show_refresh_rate": false
+  },
+  "api": {
+    "flight_data_provider": "airplanes_live",
+    "flight_poll_interval_sec": 10,
+    "weather_poll_interval_sec": 300,
+    "use_mock_flights": false,
+    "use_mock_fallback": false,
+    "opensky_username": "",
+    "opensky_password": ""
+  },
+  "network": {
+    "web_port": 5000,
+    "hotspot_ssid": "FlightNet",
+    "hotspot_password": "fly12345",
+    "hotspot_ip": "10.42.0.1",
+    "ap_ssid": "FlightNet",
+    "ap_password": "fly12345"
+  },
+  "mark_setup_complete": true
+}

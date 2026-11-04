@@ -1,0 +1,18 @@
+[Unit]
+Description=LED Flight Information Display (64x32 RGB Matrix)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/led_flight_info
+ExecStart=/usr/bin/python3 /home/pi/led_flight_info/run.py --hardware
+Restart=on-failure
+RestartSec=5s
+KillMode=mixed
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

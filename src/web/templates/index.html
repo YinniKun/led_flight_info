@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>LED Flight Info Display Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <span class="brand-icon">✈️</span>
+        <div>
+          <h1>LED Flight Display</h1>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">64x32 RGB Matrix Controller</div>
+        </div>
+      </div>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        <span id="screenModeBadge">ONLINE</span>
+      </div>
+    </header>
+
+    <!-- Matrix Live View Card -->
+    <div class="matrix-card">
+      <div class="matrix-header">
+        <span>64x32 RGB Matrix Live Preview (P2.5)</span>
+        <span style="color: var(--accent-cyan);">WatangTech Pi 4</span>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="matrixCanvas"></canvas>
+      </div>
+
+      <!-- Quick Simulator Deck -->
+      <div class="sim-controls">
+        <button class="btn-sim" data-sim="overhead">✈️ Simulate Overhead Plane</button>
+        <button class="btn-sim" data-sim="tracked">⭐ Simulate Tracked Flight</button>
+        <button class="btn-sim" data-sim="weather">🌤️ Simulate METAR Weather</button>
+        <button class="btn-sim" data-sim="fun_concorde">🚀 Concorde Flyby</button>
+        <button class="btn-sim" data-sim="fun_radar">📡 Radar Sweep</button>
+        <button class="btn-sim" data-sim="fun_ufo">🛸 UFO Flyby</button>
+        <button class="btn-sim" data-sim="setup">📱 Show QR Setup</button>
+        <button class="btn-sim" data-sim="reset" style="border-color: #ff5252; color: #ff5252;">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-location">📍 Location</button>
+      <button class="tab-btn" data-tab="tab-preferences">⭐ Preferences</button>
+      <button class="tab-btn" data-tab="tab-display">🖥️ Display</button>
+      <button class="tab-btn" data-tab="tab-wifi">📶 Wi-Fi Setup</button>
+    </div>
+
+    <form id="configForm">
+      <!-- Location Tab -->
+      <div id="tab-location" class="tab-content">
+        <div class="card">
+          <h2>📍 Location & Radar Detection</h2>
+          
+          <div class="form-group">
+            <label>Quick Airport Preset</label>
+            <select id="airportPreset">
+              <option value="">-- Choose an Airport Preset or Enter Custom --</option>
+              <option value="SFO">San Francisco Intl (SFO / KSFO)</option>
+              <option value="JFK">New York JFK (JFK / KJFK)</option>
+              <option value="LAX">Los Angeles Intl (LAX / KLAX)</option>
+              <option value="ORD">Chicago O'Hare (ORD / KORD)</option>
+              <option value="LHR">London Heathrow (LHR / EGLL)</option>
+              <option value="YYZ">Toronto Pearson (YYZ / CYYZ)</option>
+              <option value="HND">Tokyo Haneda (HND / RJTT)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <button type="button" id="btnUseCurrentLocation" class="btn-secondary">
+              📍 Detect Phone Location (GPS)
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>Location Name</label>
+            <input type="text" id="loc_name" value="{{ config.location.name }}">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Latitude</label>
+              <input type="number" step="0.0001" id="lat" value="{{ config.location.lat }}" required>
+            </div>
+            <div class="form-group">
+              <label>Longitude</label>
+              <input type="number" step="0.0001" id="lon" value="{{ config.location.lon }}" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Overhead Radius (km)</label>
+              <input type="number" step="1" id="radius_km" value="{{ config.location.radius_km }}" required>
+              <div class="helper-text">Planes within this distance are considered overhead (default: 25 km).</div>
+            </div>
+            <div class="form-group">
+              <label>Nearest Airport ICAO (for METAR weather)</label>
+              <input type="text" id="nearest_airport" value="{{ config.location.nearest_airport_icao }}" placeholder="e.g. KSFO, KJFK">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences Tab -->
+      <div id="tab-preferences" class="tab-content" style="display: none;">
+        <div class="card">
+          <h2>⭐ Tracking & Airline Preferences</h2>
+
+          <div class="form-group">
+            <label>Preferred Airlines (ICAO / IATA codes, comma separated)</label>
+            <input type="text" id="preferred_airlines" value="{{ config.preferences.preferred_airlines | join(', ') }}" placeholder="UAL, DAL, AAL, BAW, SWA">
+            <div class="helper-text">Examples: UAL (United), DAL (Delta), AAL (American), BAW (British Airways), SWA (Southwest), ACA (Air Canada)</div>
+          </div>
+
+          <div class="form-group">
+            <label>Preferred Aircraft Models (comma separated)</label>
+            <input type="text" id="preferred_models" value="{{ config.preferences.preferred_aircraft_models | join(', ') }}" placeholder="A380, B747, B787, A350, CONC">
+            <div class="helper-text">Examples: A380 (Superjumbo), B747 (Queen of the Skies), B787 (Dreamliner), A350, CONC (Concorde)</div>
+          </div>
+
+          <div class="form-group">
+            <label>Custom Flight Numbers to Track (when no plane is overhead)</label>
+            <input type="text" id="preferred_flights" value="{{ config.preferences.preferred_flight_numbers | join(', ') }}" placeholder="AC1, UA1422, AA280">
+            <div class="helper-text">Track specific flights of loved ones or interesting flights! Format: AC1 or AC1@2026-11-04</div>
+          </div>
+
+          <div class="form-group">
+            <label>Tracked Flight Date (optional departure date)</label>
+            <input type="date" id="preferred_flight_date" value="{{ config.preferences.preferred_flight_date }}">
+            <div class="helper-text">Set target departure date (e.g. 2026-11-04). Leave empty to track current / today's flight.</div>
+          </div>
+
+          <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem;">
+            <input type="checkbox" id="flash_on_preference" style="width: 20px; height: 20px; accent-color: var(--accent-cyan);" {% if config.preferences.flash_on_preference %}checked{% endif %}>
+            <label for="flash_on_preference" style="margin-bottom: 0; cursor: pointer;">
+              ⚡ Flash airline logo & plane model when a preferred flight enters overhead!
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Display Tab -->
+      <div id="tab-display" class="tab-content" style="display: none;">
+        <div class="card">
+          <h2>🖥️ Display & Units Settings</h2>
+
+          <div class="form-group">
+            <label>Panel Brightness: <span id="brightnessVal" style="color: var(--accent-cyan);">{{ config.display.brightness }}%</span></label>
+            <div class="range-wrapper">
+              <input type="range" id="brightness" min="5" max="100" value="{{ config.display.brightness }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Units of Measurement</label>
+            <select id="units">
+              <option value="aviation" {% if config.display.units == 'aviation' %}selected{% endif %}>Aviation (Knots, Feet, °C)</option>
+              <option value="imperial" {% if config.display.units == 'imperial' %}selected{% endif %}>Imperial (Miles/hour, Feet, °F)</option>
+              <option value="metric" {% if config.display.units == 'metric' %}selected{% endif %}>Metric (km/h, Meters, °C)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Hardware Configuration (WatangTech Adapter + Pi 4)</label>
+            <div style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px;">
+              <div>• Panel Size: <strong>64x32 RGB (P2.5 2048 LEDs)</strong></div>
+              <div>• GPIO Mapping: <strong>{{ config.hardware.gpio_mapping }}</strong></div>
+              <div>• Pi 4 CPU Slowdown: <strong>{{ config.hardware.gpio_slowdown }}</strong></div>
+              <div>• PWM Bits: <strong>{{ config.hardware.pwm_bits }}</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wi-Fi Tab -->
+      <div id="tab-wifi" class="tab-content" style="display: none;">
+        <div class="card">
+          <h2>📶 Wi-Fi Network Configuration</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Connect your Raspberry Pi to your local home or mobile Wi-Fi network.
+          </p>
+
+          <button type="button" id="btnWifiScan" class="btn-secondary" style="margin-bottom: 1rem;">
+            🔍 Scan Nearby Wi-Fi Networks
+          </button>
+
+          <div id="wifiListContainer" class="wifi-list"></div>
+
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <div class="form-group">
+              <label>Network SSID</label>
+              <input type="text" id="wifi_ssid" placeholder="Enter Wi-Fi SSID name">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="wifi_password" placeholder="Wi-Fi Password (if secured)" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.65rem 0.8rem; border-radius: 8px;">
+            </div>
+            <button type="button" id="btnWifiConnect" class="btn-secondary" style="background: var(--accent-cyan); color: #000; font-weight: 700;">
+              Connect to Wi-Fi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+        <button type="submit" class="btn-primary">
+          💾 Save & Apply Settings
+        </button>
+        <a href="/setup" style="color: var(--accent-cyan); font-size: 0.9rem; text-decoration: none;">
+          Open Mobile Setup Wizard →
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+{
+  "UAL": {
+    "iata": "UA",
+    "name": "United Airlines",
+    "callsign": "UNITED",
+    "country": "United States",
+    "color": "#005DAA"
+  },
+  "DAL": {
+    "iata": "DL",
+    "name": "Delta Air Lines",
+    "callsign": "DELTA",
+    "country": "United States",
+    "color": "#E01933"
+  },
+  "AAL": {
+    "iata": "AA",
+    "name": "American Airlines",
+    "callsign": "AMERICAN",
+    "country": "United States",
+    "color": "#0078D2"
+  },
+  "SWA": {
+    "iata": "WN",
+    "name": "Southwest Airlines",
+    "callsign": "SOUTHWEST",
+    "country": "United States",
+    "color": "#F9B612"
+  },
+  "BAW": {
+    "iata": "BA",
+    "name": "British Airways",
+    "callsign": "SPEEDBIRD",
+    "country": "United Kingdom",
+    "color": "#075AAA"
+  },
+  "DLH": {
+    "iata": "LH",
+    "name": "Lufthansa",
+    "callsign": "LUFTHANSA",
+    "country": "Germany",
+    "color": "#05164D"
+  },
+  "AFR": {
+    "iata": "AF",
+    "name": "Air France",
+    "callsign": "AIRFRANS",
+    "country": "France",
+    "color": "#002157"
+  },
+  "UAE": {
+    "iata": "EK",
+    "name": "Emirates",
+    "callsign": "EMIRATES",
+    "country": "United Arab Emirates",
+    "color": "#D71921"
+  },
+  "SIA": {
+    "iata": "SQ",
+    "name": "Singapore Airlines",
+    "callsign": "SINGAPORE",
+    "country": "Singapore",
+    "color": "#00205B"
+  },
+  "CPA": {
+    "iata": "CX",
+    "name": "Cathay Pacific",
+    "callsign": "CATHAY",
+    "country": "Hong Kong",
+    "color": "#006564"
+  },
+  "ANA": {
+    "iata": "NH",
+    "name": "All Nippon Airways",
+    "callsign": "ALL NIPPON",
+    "country": "Japan",
+    "color": "#122F77"
+  },
+  "JAL": {
+    "iata": "JL",
+    "name": "Japan Airlines",
+    "callsign": "JAPAN AIR",
+    "country": "Japan",
+    "color": "#CC0000"
+  },
+  "KLM": {
+    "iata": "KL",
+    "name": "KLM Royal Dutch Airlines",
+    "callsign": "KLM",
+    "country": "Netherlands",
+    "color": "#00A1DE"
+  },
+  "ACA": {
+    "iata": "AC",
+    "name": "Air Canada",
+    "callsign": "AIR CANADA",
+    "country": "Canada",
+    "color": "#D8232A"
+  },
+  "QFA": {
+    "iata": "QF",
+    "name": "Qantas",
+    "callsign": "QANTAS",
+    "country": "Australia",
+    "color": "#E40000"
+  },
+  "JBU": {
+    "iata": "B6",
+    "name": "JetBlue",
+    "callsign": "JETBLUE",
+    "country": "United States",
+    "color": "#00205B"
+  },
+  "ASA": {
+    "iata": "AS",
+    "name": "Alaska Airlines",
+    "callsign": "ALASKA",
+    "country": "United States",
+    "color": "#01426A"
+  },
+  "VIR": {
+    "iata": "VS",
+    "name": "Virgin Atlantic",
+    "callsign": "VIRGIN",
+    "country": "United Kingdom",
+    "color": "#CC0000"
+  },
+  "WJA": {
+    "iata": "WS",
+    "name": "WestJet",
+    "callsign": "WESTJET",
+    "country": "Canada",
+    "color": "#007A87"
+  },
+  "THY": {
+    "iata": "TK",
+    "name": "Turkish Airlines",
+    "callsign": "TURKISH",
+    "country": "Turkey",
+    "color": "#C70000"
+  },
+  "QTR": {
+    "iata": "QR",
+    "name": "Qatar Airways",
+    "callsign": "QATARI",
+    "country": "Qatar",
+    "color": "#5C0632"
+  },
+  "ETD": {
+    "iata": "EY",
+    "name": "Etihad Airways",
+    "callsign": "ETIHAD",
+    "country": "United Arab Emirates",
+    "color": "#BD8B28"
+  },
+  "KAL": {
+    "iata": "KE",
+    "name": "Korean Air",
+    "callsign": "KOREANAIR",
+    "country": "South Korea",
+    "color": "#0064A4"
+  },
+  "AAR": {
+    "iata": "OZ",
+    "name": "Asiana Airlines",
+    "callsign": "ASIANA",
+    "country": "South Korea",
+    "color": "#E60012"
+  },
+  "EVA": {
+    "iata": "BR",
+    "name": "EVA Air",
+    "callsign": "EVA",
+    "country": "Taiwan",
+    "color": "#008542"
+  },
+  "CAL": {
+    "iata": "CI",
+    "name": "China Airlines",
+    "callsign": "DYNASTY",
+    "country": "Taiwan",
+    "color": "#941334"
+  },
+  "CCA": {
+    "iata": "CA",
+    "name": "Air China",
+    "callsign": "AIR CHINA",
+    "country": "China",
+    "color": "#CC0000"
+  },
+  "CES": {
+    "iata": "MU",
+    "name": "China Eastern",
+    "callsign": "CHINA EASTERN",
+    "country": "China",
+    "color": "#0B2F87"
+  },
+  "CSN": {
+    "iata": "CZ",
+    "name": "China Southern",
+    "callsign": "CHINA SOUTHERN",
+    "country": "China",
+    "color": "#00205B"
+  },
+  "CHH": {
+    "iata": "HU",
+    "name": "Hainan Airlines",
+    "callsign": "HAINAN",
+    "country": "China",
+    "color": "#D0021B"
+  },
+  "AIC": {
+    "iata": "AI",
+    "name": "Air India",
+    "callsign": "AIRINDIA",
+    "country": "India",
+    "color": "#ED1C24"
+  },
+  "IGO": {
+    "iata": "6E",
+    "name": "IndiGo",
+    "callsign": "IFLY",
+    "country": "India",
+    "color": "#001E82"
+  },
+  "THA": {
+    "iata": "TG",
+    "name": "Thai Airways",
+    "callsign": "THAI",
+    "country": "Thailand",
+    "color": "#4B166E"
+  },
+  "HVN": {
+    "iata": "VN",
+    "name": "Vietnam Airlines",
+    "callsign": "VIETNAM",
+    "country": "Vietnam",
+    "color": "#005696"
+  },
+  "MAS": {
+    "iata": "MH",
+    "name": "Malaysia Airlines",
+    "callsign": "MALAYSIAN",
+    "country": "Malaysia",
+    "color": "#0C2340"
+  },
+  "GIA": {
+    "iata": "GA",
+    "name": "Garuda Indonesia",
+    "callsign": "INDONESIA",
+    "country": "Indonesia",
+    "color": "#007D8A"
+  },
+  "PAL": {
+    "iata": "PR",
+    "name": "Philippine Airlines",
+    "callsign": "PHILIPPINE",
+    "country": "Philippines",
+    "color": "#002D62"
+  },
+  "SWR": {
+    "iata": "LX",
+    "name": "Swiss International Air Lines",
+    "callsign": "SWISS",
+    "country": "Switzerland",
+    "color": "#E30613"
+  },
+  "AUA": {
+    "iata": "OS",
+    "name": "Austrian Airlines",
+    "callsign": "AUSTRIAN",
+    "country": "Austria",
+    "color": "#D61A21"
+  },
+  "BEL": {
+    "iata": "SN",
+    "name": "Brussels Airlines",
+    "callsign": "BEELINE",
+    "country": "Belgium",
+    "color": "#001D4A"
+  },
+  "SAS": {
+    "iata": "SK",
+    "name": "Scandinavian Airlines",
+    "callsign": "SCANDINAVIAN",
+    "country": "Sweden/Denmark/Norway",
+    "color": "#000066"
+  },
+  "FIN": {
+    "iata": "AY",
+    "name": "Finnair",
+    "callsign": "FINNAIR",
+    "country": "Finland",
+    "color": "#0B1560"
+  },
+  "IBE": {
+    "iata": "IB",
+    "name": "Iberia",
+    "callsign": "IBERIA",
+    "country": "Spain",
+    "color": "#D61A21"
+  },
+  "TAP": {
+    "iata": "TP",
+    "name": "TAP Air Portugal",
+    "callsign": "AIR PORTUGAL",
+    "country": "Portugal",
+    "color": "#008542"
+  },
+  "EIN": {
+    "iata": "EI",
+    "name": "Aer Lingus",
+    "callsign": "SHAMROCK",
+    "country": "Ireland",
+    "color": "#008374"
+  },
+  "ICE": {
+    "iata": "FI",
+    "name": "Icelandair",
+    "callsign": "ICEAIR",
+    "country": "Iceland",
+    "color": "#00205B"
+  },
+  "LOT": {
+    "iata": "LO",
+    "name": "LOT Polish Airlines",
+    "callsign": "POLLOT",
+    "country": "Poland",
+    "color": "#002B7F"
+  },
+  "ITY": {
+    "iata": "AZ",
+    "name": "ITA Airways",
+    "callsign": "ITARROW",
+    "country": "Italy",
+    "color": "#003399"
+  },
+  "RYR": {
+    "iata": "FR",
+    "name": "Ryanair",
+    "callsign": "RYANAIR",
+    "country": "Ireland",
+    "color": "#073590"
+  },
+  "EZY": {
+    "iata": "U2",
+    "name": "easyJet",
+    "callsign": "EASY",
+    "country": "United Kingdom",
+    "color": "#FF6600"
+  },
+  "WZZ": {
+    "iata": "W6",
+    "name": "Wizz Air",
+    "callsign": "WIZZ AIR",
+    "country": "Hungary",
+    "color": "#CC0066"
+  },
+  "NAX": {
+    "iata": "DY",
+    "name": "Norwegian Air Shuttle",
+    "callsign": "NOR SHUTTLE",
+    "country": "Norway",
+    "color": "#D81010"
+  },
+  "VLG": {
+    "iata": "VY",
+    "name": "Vueling",
+    "callsign": "VUELING",
+    "country": "Spain",
+    "color": "#FFCC00"
+  },
+  "ANZ": {
+    "iata": "NZ",
+    "name": "Air New Zealand",
+    "callsign": "NEW ZEALAND",
+    "country": "New Zealand",
+    "color": "#000000"
+  },
+  "FJI": {
+    "iata": "FJ",
+    "name": "Fiji Airways",
+    "callsign": "FIJI",
+    "country": "Fiji",
+    "color": "#003366"
+  },
+  "LAN": {
+    "iata": "LA",
+    "name": "LATAM Airlines",
+    "callsign": "LATAM",
+    "country": "Chile/Brazil",
+    "color": "#0A1242"
+  },
+  "AVA": {
+    "iata": "AV",
+    "name": "Avianca",
+    "callsign": "AVIANCA",
+    "country": "Colombia",
+    "color": "#E30613"
+  },
+  "CMP": {
+    "iata": "CM",
+    "name": "Copa Airlines",
+    "callsign": "COPA",
+    "country": "Panama",
+    "color": "#002F6C"
+  },
+  "AMX": {
+    "iata": "AM",
+    "name": "Aeromexico",
+    "callsign": "AEROMEXICO",
+    "country": "Mexico",
+    "color": "#0B2341"
+  },
+  "GLO": {
+    "iata": "G3",
+    "name": "Gol Linhas Aereas",
+    "callsign": "GOL",
+    "country": "Brazil",
+    "color": "#FF5A00"
+  },
+  "AZU": {
+    "iata": "AD",
+    "name": "Azul Brazilian Airlines",
+    "callsign": "AZUL",
+    "country": "Brazil",
+    "color": "#002561"
+  },
+  "ETH": {
+    "iata": "ET",
+    "name": "Ethiopian Airlines",
+    "callsign": "ETHIOPIAN",
+    "country": "Ethiopia",
+    "color": "#006B3F"
+  },
+  "KQA": {
+    "iata": "KQ",
+    "name": "Kenya Airways",
+    "callsign": "KENYA",
+    "country": "Kenya",
+    "color": "#BB0000"
+  },
+  "MSR": {
+    "iata": "MS",
+    "name": "EgyptAir",
+    "callsign": "EGYPTAIR",
+    "country": "Egypt",
+    "color": "#00205B"
+  },
+  "RAM": {
+    "iata": "AT",
+    "name": "Royal Air Maroc",
+    "callsign": "ROYALAIR MAROC",
+    "country": "Morocco",
+    "color": "#9E1B32"
+  },
+  "SAA": {
+    "iata": "SA",
+    "name": "South African Airways",
+    "callsign": "SPRINGBOK",
+    "country": "South Africa",
+    "color": "#002B49"
+  },
+  "SVA": {
+    "iata": "SV",
+    "name": "Saudia",
+    "callsign": "SAUDIA",
+    "country": "Saudi Arabia",
+    "color": "#004B23"
+  },
+  "GFA": {
+    "iata": "GF",
+    "name": "Gulf Air",
+    "callsign": "GULF AIR",
+    "country": "Bahrain",
+    "color": "#8C733E"
+  },
+  "OMA": {
+    "iata": "WY",
+    "name": "Oman Air",
+    "callsign": "OMAN AIR",
+    "country": "Oman",
+    "color": "#B8860B"
+  },
+  "NKS": {
+    "iata": "NK",
+    "name": "Spirit Airlines",
+    "callsign": "SPIRIT WINGS",
+    "country": "United States",
+    "color": "#FFD100"
+  },
+  "FFT": {
+    "iata": "F9",
+    "name": "Frontier Airlines",
+    "callsign": "FRONTIER FLIGHT",
+    "country": "United States",
+    "color": "#006643"
+  },
+  "HAL": {
+    "iata": "HA",
+    "name": "Hawaiian Airlines",
+    "callsign": "HAWAIIAN",
+    "country": "United States",
+    "color": "#500778"
+  },
+  "POE": {
+    "iata": "PD",
+    "name": "Porter Airlines",
+    "callsign": "PORTER AIR",
+    "country": "Canada",
+    "color": "#002B49"
+  },
+  "TSC": {
+    "iata": "TS",
+    "name": "Air Transat",
+    "callsign": "TRANSAT",
+    "country": "Canada",
+    "color": "#0085CA"
+  }
+}

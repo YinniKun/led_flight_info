@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Setup Wizard - LED Flight Info</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .wizard-step {
+      display: none;
+    }
+    .wizard-step.active {
+      display: block;
+    }
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .step-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border-color);
+      transition: all 0.3s ease;
+    }
+    .step-dot.active {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+    .wifi-item {
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .wifi-item:hover, .wifi-item.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 240, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="max-width: 600px; padding-top: 1.5rem;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <span style="font-size: 2.5rem;">✈️</span>
+      <h1 style="font-size: 1.6rem; margin-top: 0.5rem;">LED Flight Info Setup</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Configure your Raspberry Pi flight monitor</p>
+    </div>
+
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+      <div class="step-dot" id="dot4"></div>
+    </div>
+
+    <!-- Step 1: Wi-Fi Setup -->
+    <div class="wizard-step active" id="step1">
+      <div class="card">
+        <h2>📶 Step 1: Connect Pi to Local Wi-Fi</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Connect your Raspberry Pi to your home or phone hotspot Wi-Fi network so it can fetch live flight and weather telemetry.
+        </p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <label style="margin-bottom: 0; font-weight: 600;">Available Networks</label>
+          <button type="button" id="btnScanWifi" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+            🔄 Rescan
+          </button>
+        </div>
+
+        <div id="wifiListContainer" style="max-height: 220px; overflow-y: auto; margin-bottom: 1rem;">
+          <div style="color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem 0;">Scanning nearby Wi-Fi networks...</div>
+        </div>
+
+        <div class="form-group">
+          <label>Selected Network (SSID)</label>
+          <input type="text" id="wifi_ssid" placeholder="Choose from list or type SSID">
+        </div>
+
+        <div class="form-group">
+          <label>Wi-Fi Password</label>
+          <input type="password" id="wifi_password" placeholder="Enter password (leave blank if open network)" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.65rem 0.8rem; border-radius: 8px;">
+        </div>
+
+        <div id="wifiStatusMsg" style="margin-bottom: 1rem; font-size: 0.9rem; display: none;"></div>
+
+        <button type="button" id="btnConnectWifi" class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 0.75rem;">
+          📶 Connect Pi to Wi-Fi Network
+        </button>
+
+        <div style="text-align: center;">
+          <button type="button" class="btn-secondary" style="font-size: 0.85rem;" onclick="nextStep(2)">
+            Skip Wi-Fi (Already Connected via LAN / Pre-configured) →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Location -->
+    <div class="wizard-step" id="step2">
+      <div class="card">
+        <h2>📍 Step 2: Set Radar Location</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          The display will detect and show flights directly flying above this location.
+        </p>
+
+        <button type="button" id="btnPhoneGps" class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 1.25rem;">
+          📍 Detect Phone Location (GPS)
+        </button>
+
+        <div class="form-group">
+          <label>Or Choose Airport Preset</label>
+          <select id="quickAirport">
+            <option value="">-- Choose an Airport Preset --</option>
+            <option value="YYZ" selected>Toronto Pearson (YYZ / CYYZ)</option>
+            <option value="SFO">San Francisco (SFO / KSFO)</option>
+            <option value="JFK">New York (JFK / KJFK)</option>
+            <option value="LAX">Los Angeles (LAX / KLAX)</option>
+            <option value="ORD">Chicago (ORD / KORD)</option>
+            <option value="LHR">London Heathrow (LHR / EGLL)</option>
+            <option value="HND">Tokyo Haneda (HND / RJTT)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Latitude</label>
+            <input type="number" step="0.0001" id="w_lat" value="{{ config.location.lat }}">
+          </div>
+          <div class="form-group">
+            <label>Longitude</label>
+            <input type="number" step="0.0001" id="w_lon" value="{{ config.location.lon }}">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Overhead Radius (km)</label>
+            <input type="number" step="1" id="w_radius" value="{{ config.location.radius_km }}">
+          </div>
+          <div class="form-group">
+            <label>Nearest Airport ICAO</label>
+            <input type="text" id="w_icao" value="{{ config.location.nearest_airport_icao }}" placeholder="e.g. CYYZ, KSFO">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary" onclick="nextStep(1)">← Back</button>
+          <button type="button" class="btn-primary" style="flex: 1; justify-content: center;" onclick="nextStep(3)">
+            Next: Choose Preferences →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Preferences -->
+    <div class="wizard-step" id="step3">
+      <div class="card">
+        <h2>⭐ Step 3: Flight Preferences</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Customize airlines, aircraft models, or specific flights to highlight on the LED matrix.
+        </p>
+
+        <div class="form-group">
+          <label>Favorite Airlines (ICAO / IATA)</label>
+          <input type="text" id="w_airlines" value="{{ config.preferences.preferred_airlines | join(', ') }}" placeholder="ACA, UAL, DAL, BAW, SWA">
+          <div class="helper-text">Examples: ACA (Air Canada), UAL (United), DAL (Delta), BAW (British Airways)</div>
+        </div>
+
+        <div class="form-group">
+          <label>Favorite Aircraft Models</label>
+          <input type="text" id="w_models" value="{{ config.preferences.preferred_aircraft_models | join(', ') }}" placeholder="B77W, A380, B787, A350, CONC">
+          <div class="helper-text">Examples: B77W (Boeing 777), A380 (Superjumbo), B787 (Dreamliner), CONC (Concorde)</div>
+        </div>
+
+        <div class="form-group">
+          <label>Track Specific Flights (When No Plane Above)</label>
+          <input type="text" id="w_flights" value="{{ config.preferences.preferred_flight_numbers | join(', ') }}" placeholder="AC1, UA1422, AA280">
+          <div class="helper-text">Flight number to track worldwide with live route and arrival ETA.</div>
+        </div>
+
+        <div class="form-group">
+          <label>Target Flight Date (Optional Departure Date)</label>
+          <input type="date" id="w_flight_date" value="{{ config.preferences.preferred_flight_date }}">
+          <div class="helper-text">Specific departure date to track (leave blank for today / live).</div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem;">
+          <input type="checkbox" id="w_flash" style="width: 20px; height: 20px; accent-color: var(--accent-cyan);" {% if config.preferences.flash_on_preference %}checked{% endif %}>
+          <label for="w_flash" style="margin-bottom: 0;">⚡ Flash logo & model when favorite flights fly overhead</label>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-secondary" onclick="nextStep(2)">← Back</button>
+          <button type="button" class="btn-primary" style="flex: 1; justify-content: center;" onclick="nextStep(4)">
+            Next: Review & Finish →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Finish -->
+    <div class="wizard-step" id="step4">
+      <div class="card">
+        <h2>🎉 Step 4: Ready to Launch!</h2>
+        <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 1.5rem;">
+          Your configuration is complete. Clicking below will save your settings, connect your display to live radar data, and switch to flight tracking!
+        </p>
+
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem;">
+          <div style="color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">Configured Display Features:</div>
+          <div>✓ Live overhead plane alerts with authentic airline logos & telemetry</div>
+          <div>✓ "No plane above" radar scan indicator</div>
+          <div>✓ Customized tracking for favorite flight with date and local arrival ETA</div>
+          <div>✓ Airport METAR weather ticker and synchronized local clock</div>
+          <div>✓ Retro supersonic Concorde and radar sweep animations!</div>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button type="button" class="btn-secondary" onclick="nextStep(3)">← Back</button>
+          <button type="button" class="btn-primary" style="flex: 1; justify-content: center;" onclick="finishSetup()">
+            🚀 Complete Setup & Start Display!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function nextStep(stepNum) {
+      document.querySelectorAll(".wizard-step").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".step-dot").forEach(d => d.classList.remove("active"));
+
+      document.getElementById(`step${stepNum}`).classList.add("active");
+      document.getElementById(`dot${stepNum}`).classList.add("active");
+    }
+
+    // -------------------------------------------------------------
+    // Wi-Fi Scanning & Connection
+    // -------------------------------------------------------------
+    async function loadWifiList() {
+      const container = document.getElementById("wifiListContainer");
+      container.innerHTML = "<div style='color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem 0;'>Scanning nearby Wi-Fi networks...</div>";
+      try {
+        const res = await fetch("/api/wifi/scan");
+        const data = await res.json();
+        container.innerHTML = "";
+        if (!data.networks || data.networks.length === 0) {
+          container.innerHTML = "<div style='color: var(--text-muted); font-size: 0.85rem;'>No Wi-Fi networks found. Try rescanning.</div>";
+          return;
+        }
+
+        data.networks.forEach(net => {
+          const item = document.createElement("div");
+          item.className = "wifi-item";
+          item.innerHTML = `
+            <div>
+              <span style="font-weight: 600; color: var(--text-main);">${escapeHtml(net.ssid)}</span>
+              <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 0.5rem;">${net.security || "Open"}</span>
+            </div>
+            <div style="color: var(--accent-cyan); font-size: 0.8rem; font-weight: 600;">${net.signal}%</div>
+          `;
+          item.addEventListener("click", () => {
+            document.querySelectorAll(".wifi-item").forEach(el => el.classList.remove("selected"));
+            item.classList.add("selected");
+            document.getElementById("wifi_ssid").value = net.ssid;
+            document.getElementById("wifi_password").focus();
+          });
+          container.appendChild(item);
+        });
+      } catch (err) {
+        container.innerHTML = "<div style='color: var(--text-muted); font-size: 0.85rem;'>Failed to scan Wi-Fi.</div>";
+      }
+    }
+
+    document.getElementById("btnScanWifi").addEventListener("click", loadWifiList);
+
+    document.getElementById("btnConnectWifi").addEventListener("click", async () => {
+      const ssid = document.getElementById("wifi_ssid").value.trim();
+      const password = document.getElementById("wifi_password").value.trim();
+      const msg = document.getElementById("wifiStatusMsg");
+
+      if (!ssid) {
+        alert("Please select or enter a Wi-Fi network SSID");
+        return;
+      }
+
+      msg.style.display = "block";
+      msg.style.color = "var(--accent-cyan)";
+      msg.textContent = `Connecting to ${ssid}... Please wait...`;
+
+      try {
+        const res = await fetch("/api/wifi/connect", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ssid: ssid, password: password })
+        });
+        const d = await res.json();
+        if (d.success) {
+          msg.style.color = "#00ff88";
+          msg.textContent = `✓ Successfully connected to ${ssid}! Advancing to location setup...`;
+          setTimeout(() => nextStep(2), 1500);
+        } else {
+          msg.style.color = "#ff5555";
+          msg.textContent = `Connection error: ${d.message || "Failed to connect"}`;
+        }
+      } catch (e) {
+        msg.style.color = "#ff5555";
+        msg.textContent = "Request failed. Check credentials and retry.";
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Phone GPS Detection
+    // -------------------------------------------------------------
+    document.getElementById("btnPhoneGps").addEventListener("click", () => {
+      const btn = document.getElementById("btnPhoneGps");
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
+      btn.textContent = "Detecting GPS coordinates...";
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          document.getElementById("w_lat").value = pos.coords.latitude.toFixed(4);
+          document.getElementById("w_lon").value = pos.coords.longitude.toFixed(4);
+          btn.textContent = "✓ Location Detected!";
+        },
+        (err) => {
+          btn.textContent = "📍 Detect Phone Location (GPS)";
+          alert(`Location error: ${err.message}`);
+        }
+      );
+    });
+
+    const presets = {
+      YYZ: { lat: 43.6777, lon: -79.6248, icao: "CYYZ" },
+      SFO: { lat: 37.6213, lon: -122.3790, icao: "KSFO" },
+      JFK: { lat: 40.6413, lon: -73.7781, icao: "KJFK" },
+      LAX: { lat: 33.9416, lon: -118.4085, icao: "KLAX" },
+      ORD: { lat: 41.9742, lon: -87.9073, icao: "KORD" },
+      LHR: { lat: 51.4700, lon: -0.4543, icao: "EGLL" },
+      HND: { lat: 35.5494, lon: 139.7798, icao: "RJTT" },
+    };
+
+    document.getElementById("quickAirport").addEventListener("change", (e) => {
+      const p = presets[e.target.value];
+      if (p) {
+        document.getElementById("w_lat").value = p.lat;
+        document.getElementById("w_lon").value = p.lon;
+        document.getElementById("w_icao").value = p.icao;
+      }
+    });
+
+    async function finishSetup() {
+      const payload = {
+        location: {
+          lat: parseFloat(document.getElementById("w_lat").value),
+          lon: parseFloat(document.getElementById("w_lon").value),
+          radius_km: parseFloat(document.getElementById("w_radius").value || 25),
+          nearest_airport_icao: (document.getElementById("w_icao").value || "CYYZ").toUpperCase(),
+        },
+        preferences: {
+          preferred_airlines: document.getElementById("w_airlines").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean),
+          preferred_aircraft_models: document.getElementById("w_models").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean),
+          preferred_flight_numbers: document.getElementById("w_flights").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean),
+          preferred_flight_date: document.getElementById("w_flight_date").value.trim(),
+          flash_on_preference: document.getElementById("w_flash").checked,
+        },
+        mark_setup_complete: true,
+      };
+
+      try {
+        const res = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const d = await res.json();
+        if (d.success) {
+          alert("Setup completed! Redirecting to live dashboard...");
+          window.location.href = "/";
+        }
+      } catch (err) {
+        alert("Failed to save setup.");
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Auto-scan on load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadWifiList();
+    });
+  </script>
+</body>
+</html>

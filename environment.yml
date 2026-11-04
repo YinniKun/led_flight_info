@@ -1,0 +1,14 @@
+name: led_flight_info
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - pillow>=10.0.0
+      - qrcode>=7.4.2
+      - requests>=2.31.0
+      - flask>=3.0.0
+      - pytest>=8.0.0
+      - pygame>=2.5.0

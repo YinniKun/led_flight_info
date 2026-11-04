@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "led_flight_info"
+version = "1.0.0"
+description = "LED Flight Information Display for 64x32 RGB Matrix"
+authors = [{ name = "Flight Info Project" }]
+dependencies = [
+    "pillow>=10.0.0",
+    "qrcode>=7.4.2",
+    "requests>=2.31.0",
+    "flask>=3.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
