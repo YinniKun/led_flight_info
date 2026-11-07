@@ -596,8 +596,21 @@ class FlightService:
             live_res = None
             for res in results:
                 if res.get("type") == "live":
-                    live_res = res
-                    break
+                    det = res.get("detail", {})
+                    f_num = re.sub(r"[^A-Za-z0-9]", "", str(det.get("flight", ""))).upper()
+                    c_sign = re.sub(r"[^A-Za-z0-9]", "", str(det.get("callsign", ""))).upper()
+                    clean_label = re.sub(r"[^A-Za-z0-9]", "", str(res.get("label", ""))).upper()
+
+                    # Exact flight number or callsign match
+                    if f_num == clean_target or c_sign == clean_target:
+                        live_res = res
+                        break
+                    # Ensure prefix match does not match longer numbers (e.g. AC1 matching AC10)
+                    if clean_label.startswith(clean_target):
+                        rem = clean_label[len(clean_target):]
+                        if not rem or not rem[0].isdigit():
+                            live_res = res
+                            break
 
             if not live_res:
                 return None
