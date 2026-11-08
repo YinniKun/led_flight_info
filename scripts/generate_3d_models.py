@@ -664,11 +664,26 @@ def build_modular_foot(tilt_angle_deg: float = 10.0, x_center: float = 0.0) -> m
     z1 = z0 + 65.0                              # Rear of anti-tip stabilizer heel (total length = 65.0 mm)
     xc = x_center
 
-    # Height profile based on tilt angle
-    y_front = -4.0 if tilt_angle_deg > 0 else -5.0
-    tan_theta = math.tan(math.radians(tilt_angle_deg))
-    delta_y = (z1 - z0) * tan_theta
-    y_rear = y_front - delta_y if tilt_angle_deg > 0 else -5.0
+    # Height profile based on tilt angle:
+    # y = 0.0 is the bottom surface of the chassis.
+    # The foot extends in negative Y (below the chassis).
+    if tilt_angle_deg > 0:
+        # Forward pitch (rear elevated, screen angled DOWN for high shelves)
+        y_front = -4.0
+        tan_theta = math.tan(math.radians(tilt_angle_deg))
+        delta_y = (z1 - z0) * tan_theta
+        y_rear = y_front - delta_y
+    elif tilt_angle_deg < 0:
+        # Backward recline (front elevated, screen angled UP towards user's eyes for desks/tables)
+        y_rear = -4.5
+        tan_theta = math.tan(math.radians(abs(tilt_angle_deg)))
+        delta_y = (z1 - z0) * tan_theta
+        y_front = y_rear - delta_y
+    else:
+        # 0° vertical upright stand
+        y_front = -5.0
+        y_rear = -5.0
+
     y_mid = y_front + (y_rear - y_front) * (z_stop - z0) / (z1 - z0)
 
     # --- Region 1: Slide-In Channel Section (z in [20.0, 58.0 mm]) ---
@@ -738,43 +753,73 @@ def main():
     rear_mesh.save(str(rear_path))
     print(f"      ✓ Saved: {rear_path.name} ({len(rear_mesh.vectors):,} triangles, {os.path.getsize(rear_path) / 1024:.1f} KB)")
 
-    # 3. Modular Swappable Feet Variants
+    # 3. Modular Swappable Feet Variants (Negative Recline, 0° Upright, Positive Pitch)
     print("[3/5] Modeling Modular Swappable Foot Variants (Universal Left/Right, Print 2x)...")
-    foot_10deg = build_modular_foot(10.0, x_center=0.0)
-    foot_10_path = models_dir / "modular_foot_10deg.stl"
-    foot_10deg.save(str(foot_10_path))
-    print(f"      ✓ Saved: {foot_10_path.name} (10° Desktop Angle, {len(foot_10deg.vectors):,} triangles)")
+    import shutil
 
-    foot_15deg = build_modular_foot(15.0, x_center=0.0)
-    foot_15_path = models_dir / "modular_foot_15deg.stl"
-    foot_15deg.save(str(foot_15_path))
-    print(f"      ✓ Saved: {foot_15_path.name} (15° Low-Surface Tilt, {len(foot_15deg.vectors):,} triangles)")
+    # A. Backward Recline (Negative Angles: Screen Tilted UP Towards Eyes on Desks/Tables)
+    foot_neg5 = build_modular_foot(-5.0, x_center=0.0)
+    foot_neg5_path = models_dir / "modular_foot_neg5deg.stl"
+    foot_neg5.save(str(foot_neg5_path))
+    shutil.copy(foot_neg5_path, models_dir / "modular_foot_-5deg.stl")
+    print(f"      ✓ Saved: {foot_neg5_path.name} (-5° Subtle Desktop Recline, {len(foot_neg5.vectors):,} triangles)")
 
+    foot_neg10 = build_modular_foot(-10.0, x_center=0.0)
+    foot_neg10_path = models_dir / "modular_foot_neg10deg.stl"
+    foot_neg10.save(str(foot_neg10_path))
+    shutil.copy(foot_neg10_path, models_dir / "modular_foot_-10deg.stl")
+    print(f"      ✓ Saved: {foot_neg10_path.name} (-10° Standard Desktop Recline, {len(foot_neg10.vectors):,} triangles)")
+
+    foot_neg15 = build_modular_foot(-15.0, x_center=0.0)
+    foot_neg15_path = models_dir / "modular_foot_neg15deg.stl"
+    foot_neg15.save(str(foot_neg15_path))
+    shutil.copy(foot_neg15_path, models_dir / "modular_foot_-15deg.stl")
+    print(f"      ✓ Saved: {foot_neg15_path.name} (-15° Low-Surface / Nightstand Recline, {len(foot_neg15.vectors):,} triangles)")
+
+    # B. Vertical Upright (0°)
     foot_0deg = build_modular_foot(0.0, x_center=0.0)
     foot_0_path = models_dir / "modular_foot_0deg.stl"
     foot_0deg.save(str(foot_0_path))
     print(f"      ✓ Saved: {foot_0_path.name} (0° Vertical Upright Stand, {len(foot_0deg.vectors):,} triangles)")
 
-    # 4. Assembled Preview Model
-    print("[4/5] Modeling Complete Assembly with Modular Feet (complete_enclosure_assembly.stl)...")
-    foot_left_10 = build_modular_foot(10.0, x_center=FOOT_RAIL_LEFT_XC)
-    foot_right_10 = build_modular_foot(10.0, x_center=FOOT_RAIL_RIGHT_XC)
-    assembly_mesh = build_assembly(front_mesh, rear_mesh, foot_left_10, foot_right_10)
-    assembly_path = models_dir / "complete_enclosure_assembly.stl"
-    assembly_mesh.save(str(assembly_path))
-    print(f"      ✓ Saved: {assembly_path.name} ({len(assembly_mesh.vectors):,} triangles, {os.path.getsize(assembly_path) / 1024:.1f} KB)")
+    # C. Forward Pitch (Positive Angles: Screen Tilted DOWN for High Shelves / Risers)
+    foot_10deg = build_modular_foot(10.0, x_center=0.0)
+    foot_10_path = models_dir / "modular_foot_10deg.stl"
+    foot_10deg.save(str(foot_10_path))
+    shutil.copy(foot_10_path, models_dir / "modular_foot_pos10deg.stl")
+    print(f"      ✓ Saved: {foot_10_path.name} (+10° High-Shelf Down-Angle, {len(foot_10deg.vectors):,} triangles)")
+
+    foot_15deg = build_modular_foot(15.0, x_center=0.0)
+    foot_15_path = models_dir / "modular_foot_15deg.stl"
+    foot_15deg.save(str(foot_15_path))
+    shutil.copy(foot_15_path, models_dir / "modular_foot_pos15deg.stl")
+    print(f"      ✓ Saved: {foot_15_path.name} (+15° High-Shelf Down-Angle, {len(foot_15deg.vectors):,} triangles)")
+
+    # 4. Assembled Preview Models (Desktop Recline -10° and High Shelf +10°)
+    print("[4/5] Modeling Complete Assembly with Modular Feet...")
+    foot_left_neg10 = build_modular_foot(-10.0, x_center=FOOT_RAIL_LEFT_XC)
+    foot_right_neg10 = build_modular_foot(-10.0, x_center=FOOT_RAIL_RIGHT_XC)
+    assembly_neg10 = build_assembly(front_mesh, rear_mesh, foot_left_neg10, foot_right_neg10)
+    assembly_neg10_path = models_dir / "complete_enclosure_assembly_neg10deg.stl"
+    assembly_neg10.save(str(assembly_neg10_path))
+    shutil.copy(assembly_neg10_path, models_dir / "complete_enclosure_assembly.stl")
+    print(f"      ✓ Saved: {assembly_neg10_path.name} (-10° Desktop Recline Assembly, {len(assembly_neg10.vectors):,} triangles)")
 
     # Copy files to artifacts directory for direct user download
     artifact_dir = Path("/Users/ric/.gemini/antigravity/brain/148b5e22-655d-48a5-a62b-8c797702bc61")
     if artifact_dir.exists():
-        import shutil
-        shutil.copy(front_path, artifact_dir / "display_front_bezel.stl")
-        shutil.copy(rear_path, artifact_dir / "rear_chassis_enclosure.stl")
-        shutil.copy(foot_10_path, artifact_dir / "modular_foot_10deg.stl")
-        shutil.copy(foot_15_path, artifact_dir / "modular_foot_15deg.stl")
-        shutil.copy(foot_0_path, artifact_dir / "modular_foot_0deg.stl")
-        shutil.copy(assembly_path, artifact_dir / "complete_enclosure_assembly.stl")
-        print("\n[5/5] ✓ Copied all STL files to artifacts directory for direct user download.")
+        stl_files = [
+            front_path, rear_path,
+            foot_neg5_path, models_dir / "modular_foot_-5deg.stl",
+            foot_neg10_path, models_dir / "modular_foot_-10deg.stl",
+            foot_neg15_path, models_dir / "modular_foot_-15deg.stl",
+            foot_0_path, foot_10_path, foot_15_path,
+            assembly_neg10_path, models_dir / "complete_enclosure_assembly.stl",
+        ]
+        for f in stl_files:
+            if f.exists():
+                shutil.copy(f, artifact_dir / f.name)
+        print("\n[5/5] ✓ Copied all modular foot & enclosure STL files to artifacts directory for direct user download.")
 
     print("\n" + "=" * 75)
     print(" ✅ All Dead-Flush STL Models Generated Successfully!")

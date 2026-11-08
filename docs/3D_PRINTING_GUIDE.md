@@ -30,13 +30,19 @@ This guide provides complete instructions for 3D printing and assembling the **m
 
 5. **Modular Swappable Display Feet (Tool-Less Sliding T-Rail System)**:
    - Two low-profile sliding T-rails ($2.8\text{ mm}$ height) on the chassis bottom allow sliding swappable feet on and off with zero screws.
-   - Three pre-modeled angle variants:
-     * **10° Foot (`modular_foot_10deg.stl`)**: Standard eye-level desktop and monitor shelf viewing angle.
-     * **15° Foot (`modular_foot_15deg.stl`)**: Steeper tilt for low coffee tables, standing desks, or bedside nightstands.
-     * **0° Stand Foot (`modular_foot_0deg.stl`)**: 90° vertical upright stand for shelving, display cabinets, or cockpit consoles.
+   - Comprehensive angle library for every ergonomic setup:
+     * **Backward Recline (Negative Angles: Screen Angled UP Towards Eyes on Desks/Tables)**:
+       - **-10° Desktop Recline Foot (`modular_foot_neg10deg.stl` / `modular_foot_-10deg.stl`)**: **Recommended standard desktop angle**. Props the front up $11.5\text{ mm}$ above the rear heel, angling the display face directly up toward your eyes at seated desk height.
+       - **-15° Low-Surface Recline Foot (`modular_foot_neg15deg.stl` / `modular_foot_-15deg.stl`)**: Steeper backward recline for low coffee tables, bedside nightstands, or standing desks when viewing from above.
+       - **-5° Subtle Desktop Recline Foot (`modular_foot_neg5deg.stl` / `modular_foot_-5deg.stl`)**: Gentle recline for elevated desks or deep monitor shelves.
+     * **Vertical Upright Stand (0°)**:
+       - **0° Stand Foot (`modular_foot_0deg.stl`)**: 90° vertical upright stand for eye-level bookshelves, display cabinets, or cockpit consoles.
+     * **Forward Pitch (Positive Angles: Screen Angled DOWN for High Shelves)**:
+       - **+10° High-Shelf Foot (`modular_foot_10deg.stl`)**: Lifts the rear up by $11.5\text{ mm}$ to tilt the display downward for high wall shelves or overhead cabinets.
+       - **+15° High-Shelf Foot (`modular_foot_15deg.stl`)**: Steeper downward tilt for tall bookcases.
      * **Detached Flat Profile**: With feet removed, the chassis has a clean, low-profile base that sits flat on desks or mounts against walls!
    - **Universal Foot Symmetry**: Symmetrical along X, so the user prints the **same model twice (2x)** for Left and Right.
-   - **Anti-Tip Stabilizer Heel**: Runner skis ($26\text{ mm}$ wide $\times 65\text{ mm}$ long) extend **$15\text{ mm}$ behind the rear chassis**, completely preventing the unit from tipping backward when pressed.
+   - **Anti-Tip Stabilizer Heel**: Runner skis ($26\text{ mm}$ wide $\times 65\text{ mm}$ long) extend **$19.5\text{ mm}$ behind the rear chassis**, completely preventing the unit from tipping backward even under direct touch or button presses.
 
 6. **Deep Cable Cavity ($50.3\text{ mm}$)**:
    - Total body depth is **$71.5\text{ mm}$** (rear depth: $53.5\text{ mm}$, front bezel: $18.0\text{ mm}$).
@@ -57,10 +63,13 @@ This guide provides complete instructions for 3D printing and assembling the **m
 | :--- | :--- | :--- | :--- |
 | [`display_front_bezel.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/display_front_bezel.stl) | Front frame with unobstructed $163.6 \times 83.6\text{ mm}$ pocket and reinforced perimeter interlocking collar. | **Face-down on build plate** ($z=0$ on bed). | **None (0%)** |
 | [`rear_chassis_enclosure.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/rear_chassis_enclosure.stl) | Deep rear case with clear $164.6 \times 84.6\text{ mm}$ opening, bottom T-rails, Pi 4 snap-mounts, and fused louvers. | **Backplate face-down on build plate** ($z=70$ on bed). | Minimal tree supports. |
-| [`modular_foot_10deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_10deg.stl) | **10° Viewing Angle Foot** with sliding T-channel and anti-tip heel. (Universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
-| [`modular_foot_15deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_15deg.stl) | **15° Low-Surface Tilt Foot** with sliding T-channel and anti-tip heel. (Universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
-| [`modular_foot_0deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_0deg.stl) | **0° Upright Stand Foot** with sliding T-channel and anti-tip heel. (Universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
-| [`complete_enclosure_assembly.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/complete_enclosure_assembly.stl) | Complete assembled reference model showing bezel, chassis, and 10° feet installed. | CAD reference / slicer preview. | N/A |
+| [`modular_foot_neg10deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_neg10deg.stl) | **★ RECOMMENDED: -10° Desktop Recline Foot** (Angles screen UP towards eyes, universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
+| [`modular_foot_neg15deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_neg15deg.stl) | **-15° Low-Surface Recline Foot** (Steeper backward tilt for low nightstands/coffee tables, universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
+| [`modular_foot_neg5deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_neg5deg.stl) | **-5° Subtle Desktop Recline Foot** (Gentle backward tilt for elevated monitor shelves, universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
+| [`modular_foot_0deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_0deg.stl) | **0° Upright Stand Foot** (90° vertical upright, universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
+| [`modular_foot_10deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_10deg.stl) | **+10° High-Shelf Down-Angle Foot** (Angles screen DOWN from high shelves, universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
+| [`modular_foot_15deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/modular_foot_15deg.stl) | **+15° High-Shelf Down-Angle Foot** (Steeper downward tilt for high overhead cabinets, universal: **Print 2x**). | **Flat side face on build plate** ($x=\pm 13$ on bed). | **None (0%)** |
+| [`complete_enclosure_assembly_neg10deg.stl`](file:///Volumes/ssd/Documents/github/led_flight_info/models/complete_enclosure_assembly_neg10deg.stl) | Complete assembled reference model showing bezel, chassis, and -10° desktop recline feet installed. | CAD reference / slicer preview. | N/A |
 
 ---
 
