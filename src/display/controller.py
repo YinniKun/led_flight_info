@@ -49,7 +49,7 @@ class DisplayController:
         self.fun_screen = FunScreen()
 
         self.state_machine = DisplayStateMachine(
-            config, flight_service, weather_service, weather_screen=self.weather_screen
+            config, flight_service, weather_service, weather_screen=self.weather_screen, wifi_service=self.wifi_service
         )
 
         self._running = False

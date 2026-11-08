@@ -413,3 +413,35 @@ def test_weather_screen_scroll_synchronization_and_pause():
         assert cur_x <= 0
 
 
+def test_state_machine_new_location_hotspot_fallback():
+    """Verify that when a setup Pi is brought to a new location with unreachable Wi-Fi,
+    the active fallback hotspot causes the state machine to display the SETUP screen automatically."""
+    from src.display.state_machine import DisplayStateMachine, DisplayState
+    from src.services.wifi_service import WiFiService
+    from src.services.flight_service import FlightService
+    from src.services.weather_service import WeatherService
+
+    cfg = ConfigManager()
+    cfg.is_setup_completed = True  # Previously set up at home
+
+    wifi = WiFiService()
+    wifi.is_hotspot_active = False
+
+    flight_service = FlightService(cfg, use_mock=True)
+    weather_service = WeatherService(cfg)
+
+    sm = DisplayStateMachine(cfg, flight_service, weather_service, wifi_service=wifi)
+
+    # When connected to normal network (hotspot not active), should evaluate to WEATHER (or OVERHEAD if plane)
+    assert sm.evaluate() in (DisplayState.WEATHER, DisplayState.OVERHEAD)
+
+    # When brought to a new location and watchdog activates fallback hotspot:
+    wifi.is_hotspot_active = True
+    assert sm.evaluate() == DisplayState.SETUP
+
+    # When new network is configured and hotspot deactivates:
+    wifi.is_hotspot_active = False
+    assert sm.evaluate() in (DisplayState.WEATHER, DisplayState.OVERHEAD)
+
+
+

@@ -30,13 +30,16 @@ class DisplayStateMachine:
         flight_service: FlightService,
         weather_service: WeatherService,
         weather_screen: Optional[Any] = None,
+        wifi_service: Optional[Any] = None,
     ):
         self.config = config
         self.flight_service = flight_service
         self.weather_service = weather_service
         self.weather_screen = weather_screen
+        self.wifi_service = wifi_service
 
-        self.state = DisplayState.SETUP if not config.is_setup_completed else DisplayState.WEATHER
+        is_hotspot = getattr(self.wifi_service, "is_hotspot_active", False) if self.wifi_service else False
+        self.state = DisplayState.SETUP if (not config.is_setup_completed or is_hotspot) else DisplayState.WEATHER
         self.manual_override_state: Optional[DisplayState] = None
         self.manual_override_until: float = 0.0
 
@@ -70,8 +73,9 @@ class DisplayStateMachine:
         else:
             self.manual_override_state = None
 
-        # 2. Setup Mode if setup has not been completed
-        if not self.config.is_setup_completed:
+        # 2. Setup Mode if setup has not been completed, OR if AP Hotspot is active (e.g. at a new location)
+        is_hotspot = getattr(self.wifi_service, "is_hotspot_active", False) if self.wifi_service else False
+        if not self.config.is_setup_completed or is_hotspot:
             self.state = DisplayState.SETUP
             return self.state
 

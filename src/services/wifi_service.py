@@ -8,7 +8,9 @@ from __future__ import annotations
 import platform
 import socket
 import subprocess
-from typing import Any, Dict, List, Optional
+import threading
+import time
+from typing import Any, Callable, Dict, List, Optional
 
 
 class WiFiService:
@@ -150,6 +152,57 @@ class WiFiService:
             "password": self.hotspot_password,
             "ip": self.hotspot_ip,
         }
+
+    def start_auto_fallback_watchdog(self, boot_grace_sec: float = 25.0, check_interval_sec: float = 10.0) -> None:
+        """
+        Start a background watchdog thread.
+        If the Pi boots at a new location without reaching known Wi-Fi (no IP/internet after boot grace period),
+        it automatically starts the AP Hotspot so the user can configure the new network from their phone.
+        """
+        if getattr(self, "_watchdog_running", False):
+            return
+        self._watchdog_running = True
+        self._boot_time = time.time()
+        self._boot_grace_sec = boot_grace_sec
+        self._check_interval_sec = check_interval_sec
+        self._consecutive_failures = 0
+        self._watchdog_thread = threading.Thread(target=self._watchdog_loop, daemon=True)
+        self._watchdog_thread.start()
+
+    def stop_auto_fallback_watchdog(self) -> None:
+        """Stop the background network fallback watchdog."""
+        self._watchdog_running = False
+        if hasattr(self, "_watchdog_thread") and self._watchdog_thread.is_alive():
+            self._watchdog_thread.join(timeout=1.0)
+
+    def _watchdog_loop(self) -> None:
+        """Watchdog loop checking network health and automatically managing setup hotspot."""
+        # Wait for the initial boot grace period before evaluating
+        while self._watchdog_running and (time.time() - self._boot_time) < self._boot_grace_sec:
+            time.sleep(1.0)
+
+        while self._watchdog_running:
+            try:
+                has_net = self.has_internet_connection(timeout_sec=2.0)
+                local_ip = self.get_local_ip()
+                is_connected = has_net and local_ip not in ("127.0.0.1", "", self.hotspot_ip)
+
+                if is_connected:
+                    self._consecutive_failures = 0
+                    # If hotspot was active but we are now connected with valid internet, stop hotspot
+                    if self.is_hotspot_active:
+                        print("[WiFiService] Working network connection detected. Deactivating setup hotspot.")
+                        self.stop_hotspot()
+                else:
+                    self._consecutive_failures += 1
+                    # After grace period and consecutive failure checks, activate hotspot fallback
+                    if self._consecutive_failures >= 2 and not self.is_hotspot_active:
+                        print("[WiFiService] No reachable network found at current location. Activating setup hotspot fallback...")
+                        self.start_hotspot()
+            except Exception as e:
+                print(f"[WiFiService] Watchdog check error: {e}")
+
+            time.sleep(self._check_interval_sec)
 
     def scan_wifi(self) -> List[Dict[str, Any]]:
         """

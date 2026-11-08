@@ -66,6 +66,11 @@ def main():
     )
     if not config.is_setup_completed:
         wifi_service.start_hotspot()
+    else:
+        # Start automatic fallback watchdog: if the Pi is powered on at a new location
+        # and cannot associate with any known network within 25 seconds, it automatically
+        # activates the setup hotspot ('FlightNet') and switches the matrix to Setup Screen.
+        wifi_service.start_auto_fallback_watchdog(boot_grace_sec=25.0)
 
     local_ip = wifi_service.get_local_ip()
     print(f"[Network] Local IP: {local_ip} | Internet Connected: {wifi_service.has_internet_connection()}")
