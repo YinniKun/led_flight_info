@@ -42,14 +42,24 @@ echo "[3/6] Disabling onboard sound module to prevent GPIO PWM timing jitter..."
 cat << 'EOF' > /etc/modprobe.d/snd-blacklist.conf
 blacklist snd_bcm2835
 EOF
+cat << 'EOF' > /etc/modprobe.d/blacklist-rgb-matrix.conf
+blacklist snd_bcm2835
+EOF
 
-if grep -q "dtparam=audio=on" /boot/config.txt 2>/dev/null; then
-  sed -i -e "s/dtparam=audio=on/dtparam=audio=off/" /boot/config.txt
-  echo "Disabled dtparam=audio in /boot/config.txt"
-elif grep -q "dtparam=audio=on" /boot/firmware/config.txt 2>/dev/null; then
-  sed -i -e "s/dtparam=audio=on/dtparam=audio=off/" /boot/firmware/config.txt
-  echo "Disabled dtparam=audio in /boot/firmware/config.txt"
-fi
+for cfg in /boot/firmware/config.txt /boot/config.txt; do
+  if [ -f "$cfg" ]; then
+    if grep -q "dtparam=audio=on" "$cfg"; then
+      sed -i -e "s/dtparam=audio=on/dtparam=audio=off/" "$cfg"
+      echo "Set dtparam=audio=off in $cfg"
+    elif ! grep -q "dtparam=audio=" "$cfg"; then
+      echo "dtparam=audio=off" >> "$cfg"
+      echo "Added dtparam=audio=off to $cfg"
+    fi
+  fi
+done
+
+# Attempt to unload the module dynamically in running session
+modprobe -r snd_bcm2835 2>/dev/null || true
 
 echo "[4/6] Installing Python dependencies..."
 python3 -m pip install -r "${PROJECT_DIR}/requirements.txt" --break-system-packages 2>/dev/null || python3 -m pip install -r "${PROJECT_DIR}/requirements.txt"
