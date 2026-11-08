@@ -30,7 +30,7 @@ apt-get install -y \
   python3-pip \
   python3-setuptools \
   python3-pillow \
-  libatlas-base-dev \
+  libopenblas-dev \
   network-manager \
   curl
 
@@ -59,8 +59,7 @@ cd "${BUILD_DIR}"
 # Build C++ library with adafruit-hat compatibility (matching WatangTech adapter)
 make -j4
 cd bindings/python
-python3 setup.py build
-python3 setup.py install
+python3 -m pip install . --break-system-packages 2>/dev/null || (python3 setup.py build && python3 setup.py install)
 
 echo "[6/6] Installing systemd service..."
 cp "${PROJECT_DIR}/scripts/led-flight.service" /etc/systemd/system/led-flight.service
