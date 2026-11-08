@@ -27,9 +27,12 @@ apt-get install -y \
   git \
   build-essential \
   python3-dev \
+  python-dev-is-python3 \
   python3-pip \
   python3-setuptools \
   python3-pillow \
+  python3-pil \
+  cython3 \
   libopenblas-dev \
   network-manager \
   curl
@@ -51,15 +54,18 @@ fi
 echo "[4/6] Installing Python dependencies..."
 python3 -m pip install -r "${PROJECT_DIR}/requirements.txt" --break-system-packages 2>/dev/null || python3 -m pip install -r "${PROJECT_DIR}/requirements.txt"
 
-echo "[5/6] Building rpi-rgb-led-matrix C++ library and Python bindings..."
-BUILD_DIR="/tmp/rpi-rgb-led-matrix"
-rm -rf "${BUILD_DIR}"
-git clone --depth 1 https://github.com/hzeller/rpi-rgb-led-matrix.git "${BUILD_DIR}"
-cd "${BUILD_DIR}"
-# Build C++ library with adafruit-hat compatibility (matching WatangTech adapter)
-make -j4
-cd bindings/python
-python3 -m pip install . --break-system-packages 2>/dev/null || (python3 setup.py build && python3 setup.py install)
+echo "[5/6] Installing rpi-rgb-led-matrix Python bindings..."
+if ! python3 -m pip install --break-system-packages "git+https://github.com/hzeller/rpi-rgb-led-matrix" 2>/dev/null && \
+   ! python3 -m pip install "git+https://github.com/hzeller/rpi-rgb-led-matrix" 2>/dev/null; then
+  echo "Direct pip install failed, falling back to manual source build..."
+  BUILD_DIR="/tmp/rpi-rgb-led-matrix"
+  rm -rf "${BUILD_DIR}"
+  git clone --depth 1 https://github.com/hzeller/rpi-rgb-led-matrix.git "${BUILD_DIR}"
+  cd "${BUILD_DIR}"
+  make -j4
+  cd bindings/python
+  python3 -m pip install . --break-system-packages 2>/dev/null || (python3 setup.py build && python3 setup.py install)
+fi
 
 echo "[6/6] Installing systemd service..."
 cp "${PROJECT_DIR}/scripts/led-flight.service" /etc/systemd/system/led-flight.service
