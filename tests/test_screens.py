@@ -136,28 +136,91 @@ def test_weather_screen_render():
 def test_weather_screen_no_pixel_overlap():
     cfg = ConfigManager()
     screen = WeatherScreen(cfg)
-    canvas = MatrixCanvas(64, 32)
 
-    w = WeatherInfo(
-        station="KSFO",
-        temperature_c=18.0,
-        temperature_f=64.4,
-        dewpoint_c=12.0,
-        wind_dir_deg=280,
-        wind_speed_kt=14,
-        wind_gust_kt=20,
-        visibility_sm=10.0,
-        condition_code="sun",
-        condition_text="Clear",
-        altimeter_inhg=30.02,
-        raw_metar="KSFO 022056Z 28014G20KT 10SM CLR 18/12 A3002",
-        obs_time="20:56Z",
-    )
+    # Test cases: (1) gusty wind like user's CYYZ screenshot, (2) normal wind, (3) calm
+    test_cases = [
+        # User screenshot case: CYYZ 310@13G18 with A2996
+        WeatherInfo(
+            station="CYYZ",
+            temperature_c=7.0,
+            temperature_f=44.6,
+            dewpoint_c=2.0,
+            wind_dir_deg=310,
+            wind_speed_kt=13,
+            wind_gust_kt=18,
+            visibility_sm=10.0,
+            condition_code="sun",
+            condition_text="Clear",
+            altimeter_inhg=29.96,
+            altimeter_str="A2996",
+            raw_metar="CYYZ 080000Z 31013G18KT 10SM CLR 07/02 A2996",
+            obs_time="00:00Z",
+        ),
+        # Normal wind without gusts
+        WeatherInfo(
+            station="KSFO",
+            temperature_c=18.0,
+            temperature_f=64.4,
+            dewpoint_c=12.0,
+            wind_dir_deg=280,
+            wind_speed_kt=14,
+            wind_gust_kt=None,
+            visibility_sm=10.0,
+            condition_code="sun",
+            condition_text="Clear",
+            altimeter_inhg=30.02,
+            altimeter_str="A3002",
+            raw_metar="KSFO 022056Z 28014KT 10SM CLR 18/12 A3002",
+            obs_time="20:56Z",
+        ),
+        # Calm wind
+        WeatherInfo(
+            station="EGLL",
+            temperature_c=12.0,
+            temperature_f=53.6,
+            dewpoint_c=9.0,
+            wind_dir_deg=0,
+            wind_speed_kt=0,
+            wind_gust_kt=None,
+            visibility_sm=10.0,
+            condition_code="cloud",
+            condition_text="Overcast",
+            altimeter_inhg=29.92,
+            altimeter_str="Q1013",
+            raw_metar="EGLL 022056Z 00000KT 9999 OVC010 12/09 Q1013",
+            obs_time="20:56Z",
+        ),
+    ]
 
-    screen.render(canvas, w)
-    # Check that pixels are within display bounds (0..63, 0..31)
-    assert canvas.width == 64
-    assert canvas.height == 32
+    for w in test_cases:
+        canvas = MatrixCanvas(64, 32)
+        screen.render(canvas, w)
+
+        # On row y=19..23 (wind and altimeter line):
+        # Green pixels are wind: (140, 255, 140)
+        # Slate/grey pixels are altimeter: (170, 180, 190)
+        wind_xs = [
+            x for y in range(19, 24) for x in range(64)
+            if canvas.get_pixel(x, y) == (140, 255, 140)
+        ]
+        alt_xs = [
+            x for y in range(19, 24) for x in range(64)
+            if canvas.get_pixel(x, y) == (170, 180, 190)
+        ]
+
+        assert len(wind_xs) > 0, f"Expected wind pixels for station {w.station}"
+        assert len(alt_xs) > 0, f"Expected altimeter pixels for station {w.station}"
+
+        max_wind_x = max(wind_xs)
+        min_alt_x = min(alt_xs)
+
+        # Ensure strict separation: no overlap, and at least 2 pixels gap between wind and altimeter
+        gap = min_alt_x - max_wind_x
+        assert gap >= 3, (
+            f"Station {w.station}: Collision or insufficient gap between wind (ends at {max_wind_x}) "
+            f"and altimeter (starts at {min_alt_x}): gap = {gap}"
+        )
+        assert max(alt_xs) < 64, f"Altimeter pixels out of screen bounds: max_x={max(alt_xs)}"
 
 
 def test_fun_screen_all_modes():

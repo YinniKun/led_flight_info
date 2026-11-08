@@ -93,16 +93,21 @@ class WeatherScreen:
             if weather.wind_speed_kt == 0:
                 wind_str = "CALM"
             elif weather.wind_gust_kt:
-                wind_str = f"{weather.wind_dir_deg:03d}@{weather.wind_speed_kt:02d}G{weather.wind_gust_kt:02d}KT"
+                # With gusts (e.g. 310@13G18), compact format prevents collision with altimeter
+                wind_str = f"{weather.wind_dir_deg:03d}@{weather.wind_speed_kt:02d}G{weather.wind_gust_kt:02d}"
             else:
                 wind_str = f"{weather.wind_dir_deg:03d}@{weather.wind_speed_kt:02d}KT"
             draw_text(canvas, wind_str, 1, 19, font=FONT_3x5, color=(140, 255, 140))
 
-            # Altimeter: Use calibrated altimeter string (A3003 or Q1017)
+            # Altimeter: Use calibrated altimeter string (A2996 or Q1017)
+            # Dynamically right-aligned to guarantee zero overlap under all wind conditions
             alt_str = getattr(weather, "altimeter_str", None)
             if not alt_str:
                 alt_str = f"A{int(weather.altimeter_inhg * 100):04d}"
-            draw_text(canvas, alt_str, 40, 19, font=FONT_3x5, color=(170, 180, 190))
+            alt_w = text_width(alt_str, font=FONT_3x5)
+            wind_w = text_width(wind_str, font=FONT_3x5)
+            alt_x = max(1 + wind_w + 2, 63 - alt_w)
+            draw_text(canvas, alt_str, alt_x, 19, font=FONT_3x5, color=(170, 180, 190))
 
             # 3. Scrolling METAR Ticker (Bottom row, y=26)
             metar_text = f"*** {weather.raw_metar} *** "
