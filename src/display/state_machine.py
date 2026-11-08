@@ -87,8 +87,12 @@ class DisplayStateMachine:
 
         # 4. Periodic Fun Animation (Easter Egg)
         if (now - self.last_fun_time) >= self.fun_interval:
-            self.state = DisplayState.FUN
-            return self.state
+            # Do not interrupt weather screen before the METAR ticker finishes scrolling
+            if self.state == DisplayState.WEATHER and self.weather_screen and not self.weather_screen.is_scroll_complete():
+                pass
+            else:
+                self.state = DisplayState.FUN
+                return self.state
 
         # 5. When no plane is overhead:
         # Rotate through the idle screens:
@@ -97,6 +101,8 @@ class DisplayStateMachine:
         # - WEATHER screen (airport METAR weather & clock)
         idle_screens = [DisplayState.OVERHEAD]
         tracked = self.flight_service.get_tracked_flight()
+        if not tracked and self.config.preferred_flight_numbers:
+            tracked = self.flight_service._fetch_preferred_tracked_flight()
         if tracked is not None and self.config.preferred_flight_numbers:
             idle_screens.append(DisplayState.TRACKED)
         idle_screens.append(DisplayState.WEATHER)
@@ -111,7 +117,7 @@ class DisplayStateMachine:
         # Determine if it is time to switch to the next idle screen
         should_switch = False
         if target_state == DisplayState.WEATHER:
-            # Weather screen contains the METAR ticker: ensure at least one full scroll finishes
+            # Weather screen contains the METAR ticker: ensure the full scroll finishes
             is_scroll_done = self.weather_screen.is_scroll_complete() if self.weather_screen else True
             # Compute generous safety timeout based on actual METAR text length
             weather = self.weather_service.get_weather()
@@ -120,9 +126,10 @@ class DisplayStateMachine:
                 if self.weather_screen
                 else 20.0
             )
-            max_timeout = max(45.0, est_duration + 8.0)
+            max_timeout = max(50.0, est_duration + 15.0)
 
-            if (is_scroll_done and elapsed >= max(8.0, cycle_sec)) or elapsed >= max_timeout:
+            # Never switch before the weather ticker has completely finished scrolling
+            if is_scroll_done or elapsed >= max_timeout:
                 should_switch = True
         else:
             if elapsed >= cycle_sec:

@@ -104,7 +104,7 @@ class DisplayController:
             if flight:
                 self.tracking_screen.render(self.canvas, flight)
             else:
-                self.weather_screen.render(self.canvas, self.weather_service.get_weather())
+                self.overhead_screen.render(self.canvas, None)
 
         elif current_state == DisplayState.FUN:
             self.fun_screen.render(self.canvas)

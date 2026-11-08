@@ -46,8 +46,8 @@ class WeatherScreen:
         metar_text = f"*** {weather.raw_metar} *** "
         total_w = text_width(metar_text, font=FONT_3x5)
         fps = float(self.config.get("display", "metar_scroll_speed_fps", default=16))
-        # 1.0s initial pause + time for full text and padding to clear display
-        return max(10.0, 1.0 + (total_w + 48) / max(1.0, fps))
+        # 1.0s initial pause + time for full text and trailing padding to completely clear display
+        return max(10.0, 1.0 + (total_w + 16) / max(1.0, fps))
 
     def render(self, canvas: MatrixCanvas, weather: Optional[WeatherInfo]) -> None:
         canvas.clear((0, 0, 0))
@@ -122,15 +122,18 @@ class WeatherScreen:
 
             total_w = text_width(metar_text, font=FONT_3x5)
             if total_w > 0:
-                # Full scroll completes only after the entire string flows completely across the 64-pixel display
-                if self.ticker_offset >= (total_w + 64*2):  # Extra padding to ensure full scroll
+                # Full scroll completes once the entire string flows completely across the 64-pixel display
+                # When ticker_offset reaches total_w + 16, every character has completely traversed the screen
+                if self.ticker_offset >= (total_w + 16):
                     self.scroll_completed = True
 
-                shift = int(self.ticker_offset) % total_w
+                # Include a clean 48-pixel end spacer before any repeat wraps around
+                cycle_len = total_w + 48
+                shift = int(self.ticker_offset) % cycle_len
                 cur_x = -shift
                 # Draw ticker text with wrap-around
                 draw_text(canvas, metar_text, cur_x, 26, font=FONT_3x5, color=(255, 255, 255))
-                if cur_x + total_w < 64:
-                    draw_text(canvas, metar_text, cur_x + total_w, 26, font=FONT_3x5, color=(255, 255, 255))
+                if cur_x + cycle_len < 64:
+                    draw_text(canvas, metar_text, cur_x + cycle_len, 26, font=FONT_3x5, color=(255, 255, 255))
         else:
             draw_text(canvas, "NO WX DATA", 1, 14, font=FONT_3x5, color=(255, 100, 100))

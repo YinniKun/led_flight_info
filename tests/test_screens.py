@@ -444,4 +444,74 @@ def test_state_machine_new_location_hotspot_fallback():
     assert sm.evaluate() in (DisplayState.WEATHER, DisplayState.OVERHEAD)
 
 
+def test_weather_screen_finishes_scrolling_before_switching():
+    """Verify that the weather screen does not switch away until the full METAR ticker
+    has completely finished scrolling across the display."""
+    import unittest.mock as mock
+    from src.display.state_machine import DisplayStateMachine, DisplayState
+    from src.services.flight_service import FlightService
+    from src.services.weather_service import WeatherService
+
+    cfg = ConfigManager()
+    cfg.is_setup_completed = True
+    cfg.set("display", "screen_cycle_sec", 8)  # 8 second cycle for other screens
+
+    flight_service = FlightService(cfg, use_mock=False)
+    flight_service.overhead_flights = []
+    flight_service.tracked_flight = None
+
+    weather_service = WeatherService(cfg)
+    weather_screen = WeatherScreen(cfg)
+
+    w = WeatherInfo(
+        station="CYYZ",
+        temperature_c=7.0,
+        temperature_f=44.6,
+        dewpoint_c=2.0,
+        wind_dir_deg=310,
+        wind_speed_kt=13,
+        wind_gust_kt=18,
+        visibility_sm=10.0,
+        condition_code="sun",
+        condition_text="Clear",
+        altimeter_inhg=29.96,
+        altimeter_str="A2996",
+        raw_metar="CYYZ 080000Z 31013G18KT 10SM CLR 07/02 A2996",
+        obs_time="00:00Z",
+    )
+    weather_service.current_weather = w
+
+    sm = DisplayStateMachine(
+        cfg, flight_service, weather_service, weather_screen=weather_screen
+    )
+
+    # Set state to WEATHER screen
+    sm.state = DisplayState.WEATHER
+    sm.current_idle_idx = 1  # 0 is OVERHEAD, 1 is WEATHER
+    weather_screen.reset_scroll()
+    sm.idle_screen_start_time = 1000.0
+
+    canvas = MatrixCanvas(64, 32)
+
+    # At t = 1010.0 (elapsed = 10s > screen_cycle_sec of 8s):
+    # Scroll is still in progress (not complete yet)
+    with mock.patch("time.time", return_value=1010.0):
+        # Render a frame at t=1010.0
+        weather_screen.render(canvas, w)
+        assert weather_screen.is_scroll_complete() is False
+
+        # State machine MUST remain on WEATHER screen because scroll is not finished!
+        assert sm.evaluate() == DisplayState.WEATHER
+
+    # Advance scroll until it completes
+    weather_screen.ticker_offset = 500.0
+    weather_screen.render(canvas, w)
+    assert weather_screen.is_scroll_complete() is True
+
+    # Now that the scroll string has finished scrolling, state machine can switch to next screen
+    with mock.patch("time.time", return_value=1025.0):
+        assert sm.evaluate() == DisplayState.OVERHEAD
+
+
+
 
